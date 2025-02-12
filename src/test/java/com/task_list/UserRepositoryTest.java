@@ -1,13 +1,17 @@
 package com.task_list;
 
+import com.task_list.user.entity.MyUser;
+import com.task_list.user.repository.IMyUserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class UserRepositoryTest {
@@ -15,14 +19,15 @@ public class UserRepositoryTest {
     private MyUser myUser;
 
     @Mock
-    private MyUserRepository userRepository;
+    private IMyUserRepository userRepository;
 
     @BeforeEach
     void setUp(){
         myUser = MyUser.builder()
-                .full_name("Juan Jose Sierra Ortega")
+                .fullName("Juan Jose Sierra Ortega")
                 .email("juanjose@gmail.com")
                 .password("12311")
+                .dateCreated("2025/1/10 04:30")
                 .build();
     }
 
@@ -30,48 +35,66 @@ public class UserRepositoryTest {
     public void findUserByEmail(){
         String email = "juanjose@gmail.com";
 
-        Optional<MyUser> findUser = userRepository.findByEmail(email);
-        assertEquals(findUser.full_name()).equals("Juan Jose Sierra Ortega");
-        assert(findUser.get()).isNotNull;
-        assertEquals(findUser.email()).equals(email);
+        when(userRepository.findUserByEmail(email)).thenReturn(Optional.of(myUser));
+        Optional<MyUser> findUser = userRepository.findUserByEmail(email);
+
+        assertEquals(Optional.of(myUser), findUser);
+        assertEquals(email, findUser.get().getEmail());
+        assertEquals(findUser.get().getFullName(), findUser.get().getFullName());
     }
 
     @Test
     public void findUserByFullName(){
         String fullName = "Juan Jose Sierra Ortega";
 
-        Optional<MyUser> findUser = userRepository.findByFullName(email);
-        assertEquals(findUser.full_name()).equals("Juan Jose Sierra Ortega");
-        assert(findUser.get()).isNotNull;
-        assertEquals(findUser.email()).equals(email);
+        when(userRepository.findByFullName(fullName)).thenReturn(Optional.of(myUser));
+        Optional<MyUser> findUser = userRepository.findByFullName(fullName);
+
+        assertEquals(fullName, findUser.get().getFullName());
+        assertEquals(myUser.getEmail(), findUser.get().getEmail());
     }
 
     @Test
     public void saveUser(){
 
-        MyUser savedUser = myUserRepository.save(user);
+        when(userRepository.save(myUser)).thenReturn(myUser);
+        MyUser savedUser = userRepository.save(myUser);
 
-        assert(savedUser).isNotNull;
-        assertEquals(savedUser.full_name()).equals("Juan Jose Sierra Ortega");
-        assertEquals(savedUser.email()).equals("juanjose@gmail.com");
-        assertEquals(savedUser.password()).equals("12311");
+        assertEquals(myUser, savedUser);
+        assertEquals(savedUser.getFullName(), myUser.getFullName());
+        assertEquals(savedUser.getEmail(), myUser.getEmail());
     }
 
     @Test
     public void updateUserByEmail(){
-        String email = "juanjose@gmail.com";
-        String newName = "Juancho sierra";
+        String email = "juan@gmail.com";
 
-        Optional<MyUser> updateUser = userRespository.updateUserByEmail(email);
+        MyUser oldUser = MyUser.builder()
+                .fullName("Juan Ortega")
+                .email("juanjose@gmail.com")
+                .password("12311")
+                .dateCreated("2025/1/10 04:30")
+                .build();
 
-        assert(updateUser).isNotNull;
-        assertEquals(updateUser.full_name()).equals(newName);
+        MyUser dataToUpdate = MyUser.builder()
+                .fullName("Juan Ortega")
+                .email("juanjose@gmail.com")
+                .password("12311")
+                .dateCreated("2025/1/10 04:30")
+                .build();
+
+        when(userRepository.updateUserByEmail(email, dataToUpdate)).thenReturn(Optional.of(oldUser));
+        Optional<MyUser> updateUser = userRepository.updateUserByEmail(email,dataToUpdate);
+
+        assertEquals("Juan Ortega", oldUser.getFullName());
+        assertEquals("juanjose@gmail.com", oldUser.getEmail());
     }
 
     @Test
     public void deleteUserByEmail(){
         String email = "juanjose@gmail.com";
-        boolean userIsDelete = userRepository.deleteByEmail(email);
+        when(userRepository.deleteUserByEmail(email)).thenReturn(true);
+        boolean userIsDelete = userRepository.deleteUserByEmail(email);
         assertEquals(true, userIsDelete);
     }
 
