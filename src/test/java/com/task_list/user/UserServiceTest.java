@@ -1,20 +1,14 @@
-package com.task_list;
+package com.task_list.user;
 
 import com.task_list.exception.MyUserException;
-import com.task_list.user.entity.MyUser;
 import com.task_list.user.entity.dto.MyUserRequestDto;
 import com.task_list.user.entity.dto.MyUserResponseDto;
-import com.task_list.user.repository.IMyUserRepository;
 import com.task_list.user.service.MyUserServiceImpl;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;

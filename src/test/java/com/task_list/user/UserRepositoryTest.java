@@ -1,4 +1,4 @@
-package com.task_list;
+package com.task_list.user;
 
 import com.task_list.user.entity.MyUser;
 import com.task_list.user.repository.IMyUserRepository;
