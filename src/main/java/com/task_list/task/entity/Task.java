@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,7 +38,7 @@ public class Task {
     private MyUser user;
 
     public void setDateCreated() {
-        this.dateCreated = LocalDateTime.now().toString();;
+        this.dateCreated = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
     public void setDateUpdated() {
         this.dateCreated = LocalDateTime.now().toString();

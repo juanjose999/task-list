@@ -2,6 +2,7 @@ package com.task_list.user.repository;
 
 import com.task_list.user.entity.MyUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

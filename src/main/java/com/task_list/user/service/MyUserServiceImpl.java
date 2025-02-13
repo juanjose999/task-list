@@ -7,6 +7,7 @@ import com.task_list.user.entity.dto.MyUserResponseDto;
 import com.task_list.user.entity.dto.UserMapper;
 import com.task_list.user.repository.IMyUserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class MyUserServiceImpl implements IMyUserService{
 
     private final IMyUserRepository myUserRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public MyUserResponseDto findUserByEmail(String email) throws MyUserException {
@@ -30,8 +32,10 @@ public class MyUserServiceImpl implements IMyUserService{
 
     @Override
     public MyUserResponseDto save(MyUserRequestDto myUser) {
+        MyUser myUserEntity = UserMapper.requestDtoToEntity(myUser);
+        myUserEntity.setPassword(passwordEncoder.encode(myUser.password()));
         return UserMapper.entityToResponseDto(myUserRepository.save(
-                UserMapper.requestDtoToEntity(myUser)
+                myUserEntity
         ));
     }
 

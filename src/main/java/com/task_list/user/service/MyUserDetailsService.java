@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,11 +20,7 @@ public class MyUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<MyUser> findUser = myUserRepository.findUserByEmail(username);
         if(findUser.isPresent()) {
-            return User.builder()
-                    .username(findUser.get().getEmail())
-                    .password(findUser.get().getPassword())
-                    .roles("USER")
-                    .build();
+            return findUser.get();
         }
         throw new UsernameNotFoundException("User not found in the database");
     }

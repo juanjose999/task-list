@@ -18,8 +18,13 @@ public class TaskController {
     private final ITaskService taskService;
 
     @GetMapping
-    public ResponseEntity<?> getAllTasksByEmail(@RequestBody final String email) throws TaskNotFoundException, MyUserException {
-        return ResponseEntity.ok(taskService.findTaskByEmail(email));
+    public ResponseEntity<?> getAllTasksByEmail(@RequestParam final String email) throws TaskNotFoundException, MyUserException {
+        return ResponseEntity.ok(taskService.findAllTasksByEmail(email));
+    }
+
+    @GetMapping("/id")
+    public ResponseEntity<?> getTaskById(@RequestParam final String id) throws TaskNotFoundException, MyUserException {
+        return ResponseEntity.ok(taskService.findTaskById(id));
     }
 
     @PostMapping
@@ -33,7 +38,7 @@ public class TaskController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteTask(@RequestBody final String id) throws TaskNotFoundException {
+    public ResponseEntity<?> deleteTask(@RequestParam final String id) throws TaskNotFoundException {
         return taskService.deleteById(id) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 

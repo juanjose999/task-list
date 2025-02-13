@@ -13,6 +13,7 @@ import com.task_list.user.repository.IMyUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,7 +36,6 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public TaskResponseDto findTaskByEmail(String email) throws MyUserException, TaskNotFoundException {
         MyUser findUser = getMyUser(email);
-
         return TaskMapper.entityToTaskResponseDto(
                 taskRepository.findTaskByEmail(findUser.getEmail())
                         .orElseThrow(() -> new TaskNotFoundException("Task not found."))
@@ -44,13 +44,14 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public Optional<Set<TaskResponseDto>> findAllTasksByEmail(String email) throws MyUserException {
-        return Optional.of(getMyUser(email))
-                .map(MyUser::getEmail)
-                .flatMap(taskRepository::findAllTasksByEmail)
-                .map(t -> t.stream()
-                        .map(TaskMapper::entityToTaskResponseDto)
-                        .collect(Collectors.toSet())
-                );
+        Optional<Set<Task>> tasks = taskRepository.findAllTasksByEmail(email);
+        Set<TaskResponseDto> taskResponseDtos = new HashSet<>();
+        if (tasks.isPresent()) {
+            for (Task task : tasks.get()) {
+                taskResponseDtos.add(TaskMapper.entityToTaskResponseDto(task));
+            }
+        }
+        return Optional.of(taskResponseDtos);
     }
 
     @Override
@@ -60,6 +61,7 @@ public class TaskServiceImpl implements ITaskService {
         Task task = TaskMapper.taskRequestSaveToEntity(taskRequestDto);
         task.setStatus(Task.Status.SIN_REALIZAR);
         task.setPriority(Task.Priority.ALTA);
+        task.setDateCreated();
         task.setUser(findUser);
         task = taskRepository.save(task);
         findUser.addTask(task);
