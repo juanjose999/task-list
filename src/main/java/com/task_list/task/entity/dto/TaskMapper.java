@@ -26,7 +26,6 @@ public class TaskMapper {
         return Task.builder()
                 .title(taskRequestWithEmailUserDto.title())
                 .description(taskRequestWithEmailUserDto.description())
-                .priority(Task.Priority.valueOf(taskRequestWithEmailUserDto.priority().toLowerCase()))
                 .build();
     }
 }

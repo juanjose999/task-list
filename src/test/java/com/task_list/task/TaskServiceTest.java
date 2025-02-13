@@ -44,7 +44,6 @@ public class TaskServiceTest {
                 .emailUser("juan@gmail.com")
                 .title("Hola esto es un titulo")
                 .description("hola esto es un parrafo de descripcion...")
-                .priority(String.valueOf(Task.Priority.ALTA))
                 .build();
 
         taskResponseDto = TaskResponseDto.builder()
@@ -95,7 +94,6 @@ public class TaskServiceTest {
                 .emailUser("juan@gmail.com")
                 .title("Cambie el titulo")
                 .description("Cambie la descripcion")
-                .priority("BAJA")
                 .build();
 
         TaskResponseDto taskUpdate = TaskResponseDto.builder()

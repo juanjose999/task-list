@@ -29,10 +29,9 @@ public class MyUser {
     private String id;
     private String fullName;
     private String email;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     @DBRef
-    private Set<Task> tasks;
+    private Set<Task> tasks = new HashSet<>();
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String dateCreated;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

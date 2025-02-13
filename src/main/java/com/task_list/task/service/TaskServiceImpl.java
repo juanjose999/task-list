@@ -55,12 +55,13 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public TaskResponseDto save(TaskRequestWithEmailUserDto taskRequestDto) throws MyUserException {
+
         MyUser findUser = getMyUser(taskRequestDto.emailUser());
         Task task = TaskMapper.taskRequestSaveToEntity(taskRequestDto);
         task.setStatus(Task.Status.SIN_REALIZAR);
         task.setPriority(Task.Priority.ALTA);
-        task = taskRepository.save(task);
         task.setUser(findUser);
+        task = taskRepository.save(task);
         findUser.addTask(task);
         return TaskMapper.entityToTaskResponseDto(taskRepository.save(task));
     }
