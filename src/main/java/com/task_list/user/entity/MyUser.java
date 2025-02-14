@@ -2,6 +2,7 @@ package com.task_list.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.task_list.task.entity.Task;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Setter;
 import lombok.Getter;
@@ -32,9 +33,11 @@ public class MyUser implements UserDetails {
     }
     @Id
     private String id;
+    @NotBlank(message = "El nombre del usuario no puede estar vacía")
     private String fullName;
     @Indexed(unique = true)
     private String email;
+    @NotBlank(message = "La contraseña no puede estar vacía")
     private String password;
     @DBRef
     private Set<Task> tasks = new HashSet<>();

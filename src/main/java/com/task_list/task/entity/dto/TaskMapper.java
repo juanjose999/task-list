@@ -4,7 +4,7 @@ import com.task_list.task.entity.Task;
 
 public class TaskMapper {
 
-    public static Task taskRequestToEntity(final TaskRequestDto taskRequestDto) {
+    public static Task taskRequestToEntity(TaskRequestDto taskRequestDto) {
         return Task.builder()
                 .title(taskRequestDto.title())
                 .description(taskRequestDto.description())
@@ -23,10 +23,4 @@ public class TaskMapper {
                 .build();
     }
 
-    public static Task taskRequestSaveToEntity(final TaskRequestWithEmailUserDto taskRequestWithEmailUserDto) {
-        return Task.builder()
-                .title(taskRequestWithEmailUserDto.title())
-                .description(taskRequestWithEmailUserDto.description())
-                .build();
-    }
 }

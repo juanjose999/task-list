@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface ITaskRepositoryMongo extends MongoRepository<Task, String> {
-    Optional<Set<Task>> findAllByUserId(String id);
+    Optional<Set<Task>> findAllByUser_Id(String id);
     Optional<Task> findTaskByUser_Email(String email);
 
     String id(String id);

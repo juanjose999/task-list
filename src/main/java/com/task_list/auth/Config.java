@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -27,15 +28,16 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class Config {
 
     private final UserDetailsService userDetailsService;
-
+    private final JwtFilter jwtFilter;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorizeRequests -> {
-                    authorizeRequests.requestMatchers(HttpMethod.POST,"/v1/auth").permitAll();
+                    authorizeRequests.requestMatchers(HttpMethod.POST,"/v1/auth/signup","/v1/auth/login").permitAll();
                     authorizeRequests.anyRequest().authenticated();
                 })
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(withDefaults())
                 .build();
     }

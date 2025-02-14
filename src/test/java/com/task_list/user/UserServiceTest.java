@@ -1,5 +1,6 @@
 package com.task_list.user;
 
+import com.task_list.exception.JwtException;
 import com.task_list.exception.MyUserException;
 import com.task_list.user.entity.dto.MyUserRequestDto;
 import com.task_list.user.entity.dto.MyUserResponseDto;
@@ -11,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -88,11 +90,11 @@ public class UserServiceTest {
     }
 
     @Test
-    public void deleteUserByEmail(){
+    public void deleteUserByEmail() throws MyUserException, JwtException {
         String email = "juanjose@gmail.com";
         when(myUserService.deleteUserByEmail(email)).thenReturn(true);
         boolean userIsDelete = myUserService.deleteUserByEmail(email);
-        assertEquals(true, userIsDelete);
+        assertTrue(userIsDelete);
     }
 
 }

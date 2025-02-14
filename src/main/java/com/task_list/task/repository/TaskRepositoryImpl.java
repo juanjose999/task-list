@@ -31,7 +31,7 @@ public class TaskRepositoryImpl implements ITaskRepository{
 
     @Override
     public Optional<Set<Task>> findAllTasksByEmail(String email) throws MyUserException {
-        return repositoryMongo.findAllByUserId(getUser(email).getId());
+        return repositoryMongo.findAllByUser_Id(getUser(email).getId());
     }
 
     private final MyUser getUser(String email) throws MyUserException {
@@ -48,8 +48,15 @@ public class TaskRepositoryImpl implements ITaskRepository{
     public Optional<Task> update(String id, Task taskToUpdate, MyUser myUser) {
         Optional<Task> taskOptional = repositoryMongo.findById(id);
         if (taskOptional.isPresent()) {
-            taskOptional.get().setTitle(taskToUpdate.getTitle());
-            taskOptional.get().setDescription(taskToUpdate.getDescription());
+            if(taskToUpdate.getTitle() != null){
+                taskOptional.get().setTitle(taskToUpdate.getTitle());
+            }
+            if(taskToUpdate.getDescription() != null){
+                taskOptional.get().setDescription(taskToUpdate.getDescription());
+            }
+            if(taskToUpdate.getPriority() != null){
+                taskOptional.get().setPriority(taskToUpdate.getPriority());
+            }
             repositoryMongo.save(taskOptional.get());
             myUser.addTask(taskOptional.get());
             myUserRepository.save(myUser);

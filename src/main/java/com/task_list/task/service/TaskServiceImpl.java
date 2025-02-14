@@ -1,11 +1,12 @@
 package com.task_list.task.service;
 
+import com.task_list.exception.JwtException;
 import com.task_list.exception.MyUserException;
 import com.task_list.exception.TaskNotFoundException;
+import com.task_list.jwt.JwtService;
 import com.task_list.task.entity.Task;
 import com.task_list.task.entity.dto.TaskMapper;
 import com.task_list.task.entity.dto.TaskRequestDto;
-import com.task_list.task.entity.dto.TaskRequestWithEmailUserDto;
 import com.task_list.task.entity.dto.TaskResponseDto;
 import com.task_list.task.repository.ITaskRepository;
 import com.task_list.user.entity.MyUser;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +24,7 @@ public class TaskServiceImpl implements ITaskService {
     
     private final ITaskRepository taskRepository;
     private final IMyUserRepository myUserRepository;
+    private final JwtService jwtService;
     
     @Override
     public TaskResponseDto findTaskById(String id) throws TaskNotFoundException {
@@ -43,8 +44,10 @@ public class TaskServiceImpl implements ITaskService {
     }
 
     @Override
-    public Optional<Set<TaskResponseDto>> findAllTasksByEmail(String email) throws MyUserException {
-        Optional<Set<Task>> tasks = taskRepository.findAllTasksByEmail(email);
+    public Optional<Set<TaskResponseDto>> findAllTasksByEmail(String token) throws MyUserException, JwtException {
+        if(token == null || !token.startsWith("Bearer ")) throw new JwtException("Invalid token");
+        MyUser findUser = getMyUser(jwtService.extractUserEmail(token.substring(7)));
+        Optional<Set<Task>> tasks = taskRepository.findAllTasksByEmail(findUser.getEmail());
         Set<TaskResponseDto> taskResponseDtos = new HashSet<>();
         if (tasks.isPresent()) {
             for (Task task : tasks.get()) {
@@ -55,10 +58,10 @@ public class TaskServiceImpl implements ITaskService {
     }
 
     @Override
-    public TaskResponseDto save(TaskRequestWithEmailUserDto taskRequestDto) throws MyUserException {
-
-        MyUser findUser = getMyUser(taskRequestDto.emailUser());
-        Task task = TaskMapper.taskRequestSaveToEntity(taskRequestDto);
+    public TaskResponseDto save(TaskRequestDto taskRequestDto, String token) throws MyUserException {
+        String emailUser = jwtService.extractUserEmail(token.substring(7));
+        MyUser findUser = getMyUser(emailUser);
+        Task task = TaskMapper.taskRequestToEntity(taskRequestDto);
         task.setStatus(Task.Status.SIN_REALIZAR);
         task.setPriority(Task.Priority.ALTA);
         task.setDateCreated();
@@ -68,10 +71,11 @@ public class TaskServiceImpl implements ITaskService {
         return TaskMapper.entityToTaskResponseDto(taskRepository.save(task));
     }
 
-    public TaskResponseDto update(String id, TaskRequestWithEmailUserDto taskRequestWithEmailUserDto) throws TaskNotFoundException, MyUserException {
-        MyUser findUser = getMyUser(taskRequestWithEmailUserDto.emailUser());
+    @Override
+    public TaskResponseDto update(String id, TaskRequestDto taskRequestDto, String token) throws TaskNotFoundException, MyUserException {
+        MyUser findUser = getMyUser(jwtService.extractUserEmail(token.substring(7)));
         return TaskMapper.entityToTaskResponseDto(
-                taskRepository.update(id, TaskMapper.taskRequestSaveToEntity(taskRequestWithEmailUserDto), findUser)
+                taskRepository.update(id, TaskMapper.taskRequestToEntity(taskRequestDto), findUser)
                         .orElseThrow(() -> new TaskNotFoundException("task not found."))
         );
     }

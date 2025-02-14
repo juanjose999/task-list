@@ -4,7 +4,6 @@ import com.task_list.exception.MyUserException;
 import com.task_list.exception.TaskNotFoundException;
 import com.task_list.task.entity.Task;
 import com.task_list.task.entity.dto.TaskRequestDto;
-import com.task_list.task.entity.dto.TaskRequestWithEmailUserDto;
 import com.task_list.task.entity.dto.TaskResponseDto;
 import com.task_list.task.service.ITaskService;
 import com.task_list.user.entity.MyUser;
@@ -13,11 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.time.LocalDateTime;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,22 +26,17 @@ public class TaskServiceTest {
 
     private TaskRequestDto taskRequestDto;
     private TaskResponseDto taskResponseDto;
-    private TaskRequestWithEmailUserDto taskRequestWithEmailUserDto;
     private Task task;
     private MyUser myUser;
+    private String emailUser;
 
     @BeforeEach
     void setUp(){
+        emailUser = "juan@gmail.com";
         taskRequestDto = TaskRequestDto.builder()
                 .title("Hola esto es un titulo")
                 .description("hola esto es un parrafo de descripcion...")
                 .priority("ALTA")
-                .build();
-
-        taskRequestWithEmailUserDto = TaskRequestWithEmailUserDto.builder()
-                .emailUser("juan@gmail.com")
-                .title("Hola esto es un titulo")
-                .description("hola esto es un parrafo de descripcion...")
                 .build();
 
         taskResponseDto = TaskResponseDto.builder()
@@ -64,6 +57,7 @@ public class TaskServiceTest {
                 .build();
 
         myUser = MyUser.builder()
+                .id("67ae3311d875762b0042ed28")
                 .fullName("Juan Jose Sierra Ortega")
                 .email("juan@gmail.com")
                 .password("12311")
@@ -78,8 +72,8 @@ public class TaskServiceTest {
 
     @Test
     void createTask() throws MyUserException {
-        when(taskService.save(taskRequestWithEmailUserDto)).thenReturn(taskResponseDto);
-        TaskResponseDto responseDto = taskService.save(taskRequestWithEmailUserDto);
+        when(taskService.save(taskRequestDto, emailUser)).thenReturn(taskResponseDto);
+        TaskResponseDto responseDto = taskService.save(taskRequestDto,emailUser);
 
         assertEquals(responseDto, taskResponseDto);
         assertEquals(responseDto.title(), taskResponseDto.title());
@@ -90,8 +84,7 @@ public class TaskServiceTest {
     @Test
     void updateTask() throws TaskNotFoundException, MyUserException {
 
-        TaskRequestWithEmailUserDto taskToUpdate = TaskRequestWithEmailUserDto.builder()
-                .emailUser("juan@gmail.com")
+        TaskRequestDto taskToUpdate = TaskRequestDto.builder()
                 .title("Cambie el titulo")
                 .description("Cambie la descripcion")
                 .build();
@@ -102,8 +95,8 @@ public class TaskServiceTest {
                 .priority("BAJA")
                 .build();
 
-        when(taskService.update(task.getId(), taskToUpdate)).thenReturn(taskUpdate);
-        TaskResponseDto responseDto = taskService.update(task.getId(), taskToUpdate);
+        when(taskService.update(task.getId(), taskToUpdate, emailUser)).thenReturn(taskUpdate);
+        TaskResponseDto responseDto = taskService.update(task.getId(), taskToUpdate,emailUser);
 
         assertEquals(responseDto.title(), taskUpdate.title());
         assertEquals(responseDto.description(), taskUpdate.description());

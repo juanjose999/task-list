@@ -36,8 +36,9 @@ public class TaskRepositoryTest {
                 .dateUpdated(LocalDateTime.now().toString())
                 .build();
         myUser = MyUser.builder()
+                .id("67ae3311d875762b0042ed28")
                 .fullName("Juan Jose Sierra Ortega")
-                .email("juanjose@gmail.com")
+                .email("juan@gmail.com")
                 .password("12311")
                 .dateCreated("2025/1/10 04:30")
                 .build();
