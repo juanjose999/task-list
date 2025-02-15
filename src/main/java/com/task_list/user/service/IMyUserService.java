@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface IMyUserService {
     MyUserResponseDto findUserByEmail(String email) throws MyUserException;
     MyUserResponseDto findByFullName(String username) throws MyUserException;
-    MyUserResponseDto save(MyUserRequestDto myUserRequestDto);
+    Map<String,String> save(MyUserRequestDto myUserRequestDto) throws MyUserException;
     Map<String,String> loginToken(FormLogin formLogin) throws MyUserException;
     Map<String,String> refreshToken(String token) throws MyUserException, JwtException;
     MyUserResponseDto updateUserByEmail(String email, MyUserRequestDto myUserToUpdate) throws MyUserException;

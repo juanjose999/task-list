@@ -17,6 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/v1/tasks")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class TaskController {
 
     private final ITaskService taskService;

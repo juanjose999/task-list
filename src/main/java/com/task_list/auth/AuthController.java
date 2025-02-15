@@ -2,6 +2,7 @@ package com.task_list.auth;
 
 import com.task_list.exception.JwtException;
 import com.task_list.exception.MyUserException;
+import com.task_list.user.entity.MyUser;
 import com.task_list.user.entity.dto.FormLogin;
 import com.task_list.user.entity.dto.MyUserRequestDto;
 import com.task_list.user.service.IMyUserService;
@@ -18,13 +19,14 @@ import java.util.Map;
 @RestController
 @RequestMapping("/v1/auth")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class AuthController {
 
     private final IMyUserService myUserService;
 
 
     @PostMapping("/signup")
-    public ResponseEntity<?> createUser(@Valid @RequestBody MyUserRequestDto userRequestDto, BindingResult bindingResult // Captura los errores de validación
+    public ResponseEntity<?> createUser(@Valid @RequestBody MyUserRequestDto userRequestDto, BindingResult bindingResult
     ) throws MyUserException {
         if (bindingResult.hasErrors()) {
             throw new IllegalArgumentException("Campos inválidos, por favor llena los campos correctamente");

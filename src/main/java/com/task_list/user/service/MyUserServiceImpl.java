@@ -46,12 +46,12 @@ public class MyUserServiceImpl implements IMyUserService{
     }
 
     @Override
-    public MyUserResponseDto save(MyUserRequestDto myUser) {
+    public Map<String,String> save(MyUserRequestDto myUser) throws MyUserException {
         MyUser myUserEntity = UserMapper.requestDtoToEntity(myUser);
         myUserEntity.setPassword(passwordEncoder.encode(myUser.password()));
-        return UserMapper.entityToResponseDto(myUserRepository.save(
-                myUserEntity
-        ));
+        myUserRepository.save(myUserEntity);
+
+        return loginToken(new FormLogin(myUser.email(), myUser.password()));
     }
 
     @Override
