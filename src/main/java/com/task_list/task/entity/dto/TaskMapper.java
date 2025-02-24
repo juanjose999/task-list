@@ -9,6 +9,7 @@ public class TaskMapper {
                 .title(taskRequestDto.title())
                 .description(taskRequestDto.description())
                 .priority(Task.Priority.valueOf(taskRequestDto.priority()))
+                .status(Task.Status.valueOf(taskRequestDto.status()))
                 .build();
     }
 

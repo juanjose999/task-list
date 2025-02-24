@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -106,6 +107,24 @@ public class MyUserServiceImpl implements IMyUserService{
         saveToken(myUser,refresh);
         return Map.of("access_token", access,
                 "refreshed_token",refresh);
+    }
+
+    @Override
+    public void revokeToken(String token) throws MyUserException, JwtException {
+        if(token == null || !token.startsWith("Bearer ")) throw new JwtException("Invalid token");
+        String email = jwtService.extractUserEmail(token.substring(7));
+
+        MyUser myUser = myUserRepository.findUserByEmail(email)
+                .orElseThrow(() -> new MyUserException("User not found."));
+
+        tokenRepositoryMongo.findByMyUser_Id(myUser.getId()).
+                forEach(t-> {
+                    t.setExpired(true);
+                    t.setRevoked(true);
+                    tokenRepositoryMongo.save(t);
+                });
+
+        SecurityContextHolder.clearContext();
     }
 
     @Override

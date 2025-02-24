@@ -5,5 +5,5 @@ import lombok.Builder;
 
 @Builder
 public record TaskRequestDto(@NotBlank(message = "El título no puede estar vacío") String title,
-                             @NotBlank(message = "La descripcion no puede estar vacía") String description, String priority) {
+                             @NotBlank(message = "La descripcion no puede estar vacía") String description, String priority, String status) {
 }

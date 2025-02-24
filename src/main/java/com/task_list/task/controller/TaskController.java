@@ -39,6 +39,11 @@ public class TaskController {
         return ResponseEntity.ok(taskService.save(taskRequestDto, token));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<?> getTasksByName(@RequestParam String name, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws TaskNotFoundException, MyUserException, JwtException {
+        return ResponseEntity.ok(taskService.findByTaskName(name,token));
+    }
+
     @PutMapping("/id/{id}")
     public ResponseEntity<?> updateTask(@Valid @RequestBody final TaskRequestDto taskRequestDto,
                                         @PathVariable String id,
@@ -47,9 +52,9 @@ public class TaskController {
         return ResponseEntity.ok(taskService.update(id, taskRequestDto, token));
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> deleteTask(@RequestParam final String id) throws TaskNotFoundException {
-        return taskService.deleteById(id) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    @DeleteMapping("/id/{id}")
+    public ResponseEntity<?> deleteTask(@PathVariable final String id, @RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws TaskNotFoundException, MyUserException, JwtException {
+        return taskService.deleteById(id, token) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
 }

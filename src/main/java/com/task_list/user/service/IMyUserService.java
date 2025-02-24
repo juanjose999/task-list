@@ -16,6 +16,7 @@ public interface IMyUserService {
     Map<String,String> save(MyUserRequestDto myUserRequestDto) throws MyUserException;
     Map<String,String> loginToken(FormLogin formLogin) throws MyUserException;
     Map<String,String> refreshToken(String token) throws MyUserException, JwtException;
+    void revokeToken(String token) throws MyUserException, JwtException;
     MyUserResponseDto updateUserByEmail(String email, MyUserRequestDto myUserToUpdate) throws MyUserException;
     Boolean deleteUserByEmail(String token) throws MyUserException, JwtException;
 }

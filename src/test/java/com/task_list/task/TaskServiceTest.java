@@ -1,5 +1,6 @@
 package com.task_list.task;
 
+import com.task_list.exception.JwtException;
 import com.task_list.exception.MyUserException;
 import com.task_list.exception.TaskNotFoundException;
 import com.task_list.task.entity.Task;
@@ -104,10 +105,10 @@ public class TaskServiceTest {
     }
 
     @Test
-    void deleteTask() throws TaskNotFoundException {
+    void deleteTask() throws TaskNotFoundException, MyUserException, JwtException {
         String id = task.getId();
-        when(taskService.deleteById(id)).thenReturn(true);
-        assertTrue(taskService.deleteById(id));
+        when(taskService.deleteById(id,"67b7816bb48b3c38d4e38534")).thenReturn(true);
+        assertTrue(taskService.deleteById(id,"67b7816bb48b3c38d4e38534"));
     }
 
 }

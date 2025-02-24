@@ -19,7 +19,8 @@ import java.time.format.DateTimeFormatter;
 public class Task {
     public enum Status {
         SIN_REALIZAR,
-        REALIZADA
+        REALIZADA,
+        EN_PROCESO
     }
     public enum Priority {
         ALTA, BAJA

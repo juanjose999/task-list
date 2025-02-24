@@ -14,9 +14,8 @@ import com.task_list.user.repository.IMyUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +34,15 @@ public class TaskServiceImpl implements ITaskService {
     }
 
     @Override
+    public Optional<List<TaskResponseDto>> findByTaskName(String name, String token) throws MyUserException, JwtException {
+        if(token == null || !token.startsWith("Bearer ")) throw new JwtException("Invalid token");
+        String email = jwtService.extractUserEmail(token.substring(7));
+        MyUser user = getMyUser(email);
+        return Optional.of(taskRepository.findByTaskName(name, user).stream()
+                .map(TaskMapper::entityToTaskResponseDto).toList());
+    }
+
+    @Override
     public TaskResponseDto findTaskByEmail(String email) throws MyUserException, TaskNotFoundException {
         MyUser findUser = getMyUser(email);
         return TaskMapper.entityToTaskResponseDto(
@@ -48,12 +56,11 @@ public class TaskServiceImpl implements ITaskService {
         if(token == null || !token.startsWith("Bearer ")) throw new JwtException("Invalid token");
         MyUser findUser = getMyUser(jwtService.extractUserEmail(token.substring(7)));
         Optional<Set<Task>> tasks = taskRepository.findAllTasksByEmail(findUser.getEmail());
-        Set<TaskResponseDto> taskResponseDtos = new HashSet<>();
-        if (tasks.isPresent()) {
-            for (Task task : tasks.get()) {
-                taskResponseDtos.add(TaskMapper.entityToTaskResponseDto(task));
-            }
-        }
+        Set<TaskResponseDto> taskResponseDtos = tasks.get().stream()
+                .sorted(Comparator.comparing(Task::getDateCreated).reversed())
+                .map(TaskMapper::entityToTaskResponseDto)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
         return Optional.of(taskResponseDtos);
     }
 
@@ -62,8 +69,8 @@ public class TaskServiceImpl implements ITaskService {
         String emailUser = jwtService.extractUserEmail(token.substring(7));
         MyUser findUser = getMyUser(emailUser);
         Task task = TaskMapper.taskRequestToEntity(taskRequestDto);
-        task.setStatus(Task.Status.SIN_REALIZAR);
-        task.setPriority(Task.Priority.ALTA);
+        task.setStatus(Task.Status.valueOf(taskRequestDto.status()));
+        task.setPriority(Task.Priority.valueOf(taskRequestDto.priority()));
         task.setDateCreated();
         task.setUser(findUser);
         task = taskRepository.save(task);
@@ -81,8 +88,16 @@ public class TaskServiceImpl implements ITaskService {
     }
 
     @Override
-    public boolean deleteById(String id) {
-        return taskRepository.delete(id);
+    public boolean deleteById(String id, String token) throws JwtException, MyUserException {
+        if(token == null || !token.startsWith("Bearer ")) throw new JwtException("Invalid token");
+        String emailUser = jwtService.extractUserEmail(token.substring(7));
+        MyUser findUser = getMyUser(emailUser);
+        Task task = taskRepository.findTaskById(id).get();
+        if(findUser.getId().equals(task.getUser().getId())) {
+            taskRepository.delete(id);
+            return true;
+        }
+        return false;
     }
 
     private MyUser getMyUser(String email) throws MyUserException {
